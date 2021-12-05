@@ -51,7 +51,7 @@ typedef struct {
 
 /*=====[Prototypes (declarations) of public functions]=======================*/
 
-void adcInit(adc_t *init_adc);
+void adc_Init(adc_t *init_adc);
 
 // Devuelve un dato adquirido
 void adc_GetData(void);

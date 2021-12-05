@@ -53,7 +53,7 @@ inline void BSP_BuzzerStop()
 	HAL_TIM_Base_Stop(&htim4);
 }*/
 
-void BSP_AdcInit(void)
+void BSP_Adc_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -166,8 +166,25 @@ static void MX_SPI2_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN SPI2_Init 2 */
-
-  /* USER CODE END SPI2_Init 2 */
 
 }
+
+void BSP_UART_Init(void)
+{
+  huart.Instance = USART3;
+  huart.Init.BaudRate = 9600;
+  huart.Init.WordLength = UART_WORDLENGTH_8B;
+  huart.Init.StopBits = UART_STOPBITS_1;
+  huart.Init.Parity = UART_PARITY_NONE;
+  huart.Init.Mode = UART_MODE_TX_RX;
+  huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+

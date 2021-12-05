@@ -25,6 +25,7 @@
 #include "stm32f7xx_nucleo_144.h"
 #include "stm32f767_indicador_v1.h"
 #include "API_adc.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,7 +56,18 @@ adc_t adc1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
+
 /* USER CODE BEGIN PFP */
+
+/* Private function prototypes -----------------------------------------------*/
+#ifdef __GNUC__
+/* With GCC, small printf (option LD Linker->Libraries->Small printf
+   set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
 
 /* USER CODE END PFP */
 
@@ -93,15 +105,23 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
+  BSP_UART_Init();
   /* USER CODE BEGIN 2 */
   adc1.analog_input = CHANNEL_TEMP;
   adc1.gain = GAIN1;
   adc1.speed = LOW_SPEED;
   adc1.pwr = PWR_DISABLE;
-  adcInit(&adc1);
+  adc_Init(&adc1);
+  adc_Stop();
+
+
+
+   /* Output a message on Hyperterminal using printf function */
+   printf("\n\r UART Printf Example: retarget the C library printf function to the UART\n\r");
+   printf("** Test finished successfully. ** \n\r");
+
   /* USER CODE END 2 */
 
-  adc_Stop();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -121,6 +141,15 @@ int main(void)
   /* USER CODE END 3 */
 }
 
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART3 and Loop until the end of transmission */
+  HAL_UART_Transmit(&huart, (uint8_t *)&ch, 1, 0xFFFF);
+
+  return ch;
+}
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -129,6 +158,7 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
   */
@@ -161,6 +191,12 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART3;
+  PeriphClkInitStruct.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
@@ -220,28 +256,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, TESTPC10s_Pin|TESTPC11_Pin, GPIO_PIN_RESET);
-
   /*Configure GPIO pin : DRDY_Pin */
   GPIO_InitStruct.Pin = DRDY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(DRDY_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : TESTPC10s_Pin */
-  GPIO_InitStruct.Pin = TESTPC10s_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(TESTPC10s_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : TESTPC11_Pin */
-  GPIO_InitStruct.Pin = TESTPC11_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(TESTPC11_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);

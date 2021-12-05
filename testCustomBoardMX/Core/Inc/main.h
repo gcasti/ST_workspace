@@ -61,10 +61,6 @@ void Error_Handler(void);
 #define DRDY_Pin GPIO_PIN_14
 #define DRDY_GPIO_Port GPIOB
 #define DRDY_EXTI_IRQn EXTI15_10_IRQn
-#define TESTPC10s_Pin GPIO_PIN_10
-#define TESTPC10s_GPIO_Port GPIOC
-#define TESTPC11_Pin GPIO_PIN_11
-#define TESTPC11_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

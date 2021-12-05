@@ -96,8 +96,8 @@ void adc_SetPowerdown(pwr_t pwr)
 
 /*=====[Implementations of public functions]=================================*/
 
-void adcInit(adc_t * init_adc){
-	BSP_AdcInit();
+void adc_Init(adc_t * init_adc){
+	BSP_Adc_Init();
 	adc_SetGain(init_adc->gain);
 	adc_SetInput(init_adc->analog_input);
 	adc_SetSpeed(init_adc->speed);

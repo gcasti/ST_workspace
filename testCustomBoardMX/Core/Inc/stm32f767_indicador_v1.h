@@ -36,14 +36,15 @@
 
 
 SPI_HandleTypeDef hspi2;
-
+UART_HandleTypeDef huart;
 
 void BSP_Buzzer_Init(void);
 void BSP_BuzzerBeep(uint32_t period);
 extern void BSP_BuzzerStop();
 
+void BSP_UART_Init(void);
 
 // Configura el ADC
-void BSP_AdcInit(void);
+void BSP_Adc_Init(void);
 
 #endif /* BSP_STM32F767_INDICADOR_V1_STM32F767_INDICADOR_V1_H_ */
