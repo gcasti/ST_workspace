@@ -23,11 +23,14 @@
 #include "stm32f7xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32f7xx_nucleo_144.h"
+#include "stm32f767_indicador_v1.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-
+extern SPI_HandleTypeDef hspi2;
+extern volatile uint8_t dato_temp[3];
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -198,6 +201,24 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f7xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+  uint8_t prueba[2];
+	__disable_irq();
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+  HAL_SPI_MspInit(&hspi2);
+  HAL_SPI_Receive(&hspi2,prueba,2, 100);
+  HAL_SPI_MspDeInit(&hspi2);
+  __enable_irq();
+  /* USER CODE END EXTI15_10_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
