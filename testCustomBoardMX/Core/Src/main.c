@@ -112,7 +112,7 @@ int main(void)
   adc1.speed = LOW_SPEED;
   adc1.pwr = PWR_DISABLE;
   adc_Init(&adc1);
-  adc_Stop();
+  //adc_Stop();
 
 
 
