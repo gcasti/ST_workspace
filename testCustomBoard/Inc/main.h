@@ -36,7 +36,7 @@ extern "C" {
 #include "fsm.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define NUCLEO
+//#define NUCLEO
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

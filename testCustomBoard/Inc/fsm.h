@@ -3,7 +3,8 @@
 #include "stm32f767_indicador_v1.h"
 #include "API_adc.h"
 
-#define NUCLEO
+//#define NUCLEO
+
 
 
 

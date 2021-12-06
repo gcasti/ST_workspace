@@ -54,9 +54,6 @@ static void Error_Handler(void);
 /* Private functions ---------------------------------------------------------*/
 
 
-uint8_t *testReceiveData;
-uint8_t status=0;
-
 int main(void)
 {
 
@@ -67,7 +64,6 @@ int main(void)
 
 	cmdUart_Init();
 
-	printf("\n\r Inicio \n\r" );
 	fsmInit( );
 
   /* Infinite loop */

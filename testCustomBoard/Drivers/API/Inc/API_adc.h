@@ -24,8 +24,7 @@
 
 typedef bool bool_t;
 
-
-typedef enum {GAIN1 , GAIN2 , GAIN64 , GAIN128} gain_t;
+typedef enum {GAIN1 , GAIN2 , GAIN64 , GAIN128 } gain_t;
 typedef enum {CHANNEL_IN1 , CHANNEL_IN2 , CHANNEL_TEMP} analog_input_t;
 
 typedef enum {
@@ -47,6 +46,7 @@ typedef struct {
 	pwr_t pwr;						// Indica si el modo de bajo consumo está activado
 	float data;						// último dato adquirido
 } adc_t;
+
 
 /*=====[Definitions of public global variables]==============================*/
 

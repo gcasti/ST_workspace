@@ -15,13 +15,16 @@ typedef enum{
 } fsmLoggState_t;
 
 adc_t adc1;
+const char estadoIdle[] = "\n\rEn espera \n\r";
+const char estadoConfig [] = "Modo configuración \n\r";
+const char estadoAQ[] = "ADquiriendo datos \n\r";
 
 void fsmError( void );
 fsmLoggState_t fsmLoggState;
 uint8_t *command;
 
 // Funcion privada de FSM
-bool_t receiveParameters(param_t param, adc_t * adc){
+bool_t receiveParameters(cmd_t param, adc_t * adc){
 	bool_t retVal = true;
 	switch(param){
 		case cmdGAIN1:
@@ -64,6 +67,14 @@ bool_t receiveParameters(param_t param, adc_t * adc){
 	return retVal;
 }
 
+void send_Status(adc_t * adc){
+	printf("************ CONFIGURACION ***************** \n\r");
+	printf("POWER: %d \n\r",adc->gain);
+	printf("Ganancia: %d \n\r",adc->gain);
+	printf("Velocidad de adquisición: %d  \n\r", adc->speed);
+	printf("Canal de entrada: %d \n\r", adc->analog_input);
+	printf("******************************************** \n\r");
+}
 
 void fsmInit( void )
 {
@@ -82,6 +93,7 @@ void fsmInit( void )
 		BSP_LED_Off(LED3);
 	#endif
 
+	printf("%s",estadoIdle);
    	fsmLoggState = IDLE;   // Set initial state
 }
 
@@ -97,13 +109,15 @@ void fsmUpdate(void)
 			if(true == cmdUart_Receive(command)){
 				switch(*command){
 					case configAQ:
+						printf("%s",estadoConfig);
 						fsmLoggState = CONFIG;
 						break;
 					case startAQ:
+						printf("%s",estadoAQ);
 						fsmLoggState = ACQUIRE;
 						break;
 					default:
-						printf("\n COMANDO NO VALIDO \n\r");
+						printf("COMANDO NO VALIDO \n\r");
 						break;
 					}
 				}
@@ -116,19 +130,18 @@ void fsmUpdate(void)
 			BSP_LED_Off(LED3);
 
 			if(true == cmdUart_Receive(command)){
-				switch(*command){
-					case exitCONFIG:
-						fsmLoggState = IDLE;
-						break;
-					default:
-						if(true == receiveParameters(*command,&adc1)){
-							adc_Config(&adc1);
-							printf("\n ADC Configurado \n");
-							HAL_Delay(1);
+				if(exitCONFIG == *command){
+					send_Status(&adc1);
+					printf("%s",estadoIdle);
+					fsmLoggState = IDLE;
+				}else{
+					if(true == receiveParameters(*command,&adc1))
+					{
+						printf("Parámetro recibido \n\r");
+						adc_Config(&adc1);
 						}else{
-							printf("\n Parámetro no valido \n");
+						printf("COMANDO NO VALIDO \n\r");
 						}
-						break;
 				}
 			}
 			break;
@@ -144,13 +157,15 @@ void fsmUpdate(void)
 			if(true == cmdUart_Receive(command)){
 				switch(*command){
 					case stopAQ:
+						printf("%s",estadoIdle);
 						fsmLoggState = IDLE;
 						break;
 					case configAQ:
+						printf("%s",estadoConfig);
 						fsmLoggState = CONFIG;
 						break;
 					default:
-						printf("\n COMANDO NO VALIDO \n");
+						printf("COMANDO NO VALIDO \n\r");
 						break;
 				}
 			}

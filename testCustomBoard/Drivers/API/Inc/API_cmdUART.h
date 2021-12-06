@@ -25,37 +25,33 @@
 typedef bool bool_t;
 
 typedef enum{
-	configAQ 	= 0x00,
-	exitCONFIG 	= 0x01,
-	startAQ		= 0x02,
-	stopAQ		= 0x03
-} cmd_t;
-
-typedef enum{
+	configAQ 		= 0x00,
+	exitCONFIG 		= 0x01,
+	startAQ			= 0x02,
+	stopAQ			= 0x03,
 	cmdGAIN1		= 0x04,
 	cmdGAIN2		= 0x05,
 	cmdGAIN64		= 0x06,
 	cmdGAIN128		= 0x07,
 	cmdCHANNEL_IN1	= 0x08,
 	cmdCHANNEL_IN2	= 0x09,
-	cmdCHANNEL_TEMP= 0x10,
+	cmdCHANNEL_TEMP = 0x10,
 	cmdLOW_SPEED	= 0x11,
 	cmdHIGH_SPEED	= 0x12,
 	cmdPWR_ENABLE	= 0x13,
-	cmdPWR_DISABLE	= 0x14
-}param_t;
+	cmdPWR_DISABLE	= 0x14,
+	cmdLAST
+} cmd_t;
+
 /*=====[Definitions of public global variables]==============================*/
 
 /*=====[Prototypes (declarations) of public functions]=======================*/
 
 // Inicializa la uart
 void cmdUart_Init(void);
-// Lee un dato y verifica que sea un comando
-cmd_t cmdUart_ReadCommand();
 
 // Recibe un comando desde la uart
 bool_t cmdUart_Receive(uint8_t * cmd);
-
 
 void sendData(void);
 

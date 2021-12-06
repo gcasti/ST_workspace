@@ -93,6 +93,7 @@ void adc_SetPowerdown(pwr_t pwr)
 	HAL_GPIO_WritePin(AD_PDWN_GPIO_PORT, AD_PDWN_PIN, pwr);
 }
 
+
 bool_t getStatus(adc_t * adc)
 {	return adc->state;
 	}
@@ -120,7 +121,6 @@ void adc_Go(adc_t * adc){
 
 // Detiene la conversion de datos
 void adc_Stop(adc_t * adc){
-	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 	adc->state = false;
 };
 

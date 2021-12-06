@@ -45,34 +45,23 @@
 void cmdUart_Init(void){
 	BSP_UART_Init();
 }
-
-
-cmd_t cmdUart_ReadCommand(void){
-}
-
+/**
+ * Chequea si se recibe un byte desde la UART y que sea un comando válido de la lista
+ */
 bool_t cmdUart_Receive(uint8_t* cmd){
-	bool_t retVal = true;
-	uint8_t cmd_temp[3];
+	bool_t retVal = false;
+	uint8_t cmd_temp=0;
 
-	if(HAL_UART_Receive(&huart, cmd_temp , 1, 10) == HAL_OK){
-		switch(cmd_temp[0]){
-			case configAQ:
-			case exitCONFIG:
-			case startAQ:
-			case stopAQ:
-				*cmd=cmd_temp[0];
-				retVal = true;
-				break;
-			default:
-				retVal = false;
-				break;
-			}
-	}
-	else{retVal = false;
+	if(HAL_UART_Receive(&huart, &cmd_temp , 1, 10) == HAL_OK){
+		if(cmdLAST > cmd_temp){
+			*cmd=cmd_temp;
+			retVal = true;
+		}else
+			printf("Dato no valido \n\r");
 		}
-
 	return retVal;
 }
+
 
 
 PUTCHAR_PROTOTYPE
