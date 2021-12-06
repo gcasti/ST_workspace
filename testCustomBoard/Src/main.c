@@ -28,7 +28,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 extern SPI_HandleTypeDef hspi2;
-adc_t adc1;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -43,7 +43,6 @@ adc_t adc1;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-extern SPI_HandleTypeDef hspi2;
 
 /* USER CODE END PV */
 
@@ -51,62 +50,33 @@ extern SPI_HandleTypeDef hspi2;
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 
+
 /* Private functions ---------------------------------------------------------*/
-#ifdef __GNUC__
-/* With GCC, small printf (option LD Linker->Libraries->Small printf
-   set to 'Yes') calls __io_putchar() */
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
 
 
+uint8_t *testReceiveData;
+uint8_t status=0;
 
 int main(void)
 {
-  /* STM32F4xx HAL library initialization:
-       - Configure the Flash prefetch
-       - Systick timer is configured by default as source of time base, but user
-         can eventually implement his proper time base source (a general purpose
-         timer for example or other time source), keeping in mind that Time base
-         duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and
-         handled in milliseconds basis.
-       - Set NVIC Group Priority to 4
-       - Low Level Initialization
-     */
 
 	HAL_Init();
 
   /* Configure the system clock to 180 MHz */
 	SystemClock_Config();
 
-	BSP_UART_Init();
-	adc1.analog_input = CHANNEL_TEMP;
-	adc1.gain = GAIN1;
-	adc1.speed = LOW_SPEED;
-	adc1.pwr = PWR_DISABLE;
-	adc_Init(&adc1);
+	cmdUart_Init();
 
-	/* Output a message on Hyperterminal using printf function */
-	printf("\n\r UART Printf Example: retarget the C library printf function to the UART\n\r");
-	printf("** Test finished successfully. ** \n\r");
+	printf("\n\r Inicio \n\r" );
+	fsmInit( );
 
   /* Infinite loop */
 	while (1)
 	{
-
+		fsmUpdate();
 	}
 }
 
-
-PUTCHAR_PROTOTYPE
-{
-  /* Place your implementation of fputc here */
-  /* e.g. write a character to the USART3 and Loop until the end of transmission */
-  HAL_UART_Transmit(&huart, (uint8_t *)&ch, 1, 0xFFFF);
-
-  return ch;
-}
 
 
 /**

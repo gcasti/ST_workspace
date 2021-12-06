@@ -12,7 +12,7 @@
 extern SPI_HandleTypeDef hspi2;
 volatile uint8_t dato_temp[3];
 
-static void MX_SPI2_Init(void);
+static void BSP_SPI_Init(void);
 
 /*
 void BSP_Buzzer_Init()
@@ -134,22 +134,14 @@ void BSP_Adc_Init(void)
 	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
-	MX_SPI2_Init();
+	BSP_SPI_Init();
 
 	}
 
 
-static void MX_SPI2_Init(void)
+static void BSP_SPI_Init(void)
 {
-
-  /* USER CODE BEGIN SPI2_Init 0 */
-
-  /* USER CODE END SPI2_Init 0 */
-
-  /* USER CODE BEGIN SPI2_Init 1 */
-
-  /* USER CODE END SPI2_Init 1 */
-  /* SPI2 parameter configuration*/
+  /* SPI parameter configuration*/
   hspi2.Instance = SPI2;
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;

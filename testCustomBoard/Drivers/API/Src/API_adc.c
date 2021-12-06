@@ -93,26 +93,47 @@ void adc_SetPowerdown(pwr_t pwr)
 	HAL_GPIO_WritePin(AD_PDWN_GPIO_PORT, AD_PDWN_PIN, pwr);
 }
 
+bool_t getStatus(adc_t * adc)
+{	return adc->state;
+	}
+
+void HW_Config(adc_t * adc){
+	adc_SetGain(adc->gain);
+	adc_SetInput(adc->analog_input);
+	adc_SetSpeed(adc->speed);
+	adc_SetPowerdown(adc->pwr);
+}
 
 /*=====[Implementations of public functions]=================================*/
 
-void adc_Init(adc_t * init_adc){
+void adc_Init(adc_t * adc){
 	BSP_Adc_Init();
-	adc_SetGain(init_adc->gain);
-	adc_SetInput(init_adc->analog_input);
-	adc_SetSpeed(init_adc->speed);
-	adc_SetPowerdown(init_adc->pwr);
+	HW_Config(adc);
+	adc_Stop(adc);
 }
 
 // Habilita la conversion de datos
-void adc_Go(void){
-    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+void adc_Go(adc_t * adc){
+	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+    adc->state = true;
 };
 
 // Detiene la conversion de datos
-void adc_Stop(void){
+void adc_Stop(adc_t * adc){
 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+	adc->state = false;
 };
+
+bool_t adc_newData(adc_t * adc){
+	return true;
+};
+
+void adc_Config(adc_t * adc){
+	if (true == getStatus(adc)){
+		adc_Stop(adc);
+		HW_Config(adc);
+	}
+}
 
 
 /*=====[Implementations of interrupt functions]==============================*/

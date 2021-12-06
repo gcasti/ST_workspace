@@ -34,7 +34,6 @@
 #define AD_DRDY_GPIO_PORT GPIOB
 
 
-
 SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart;
 

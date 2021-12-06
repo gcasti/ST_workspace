@@ -24,6 +24,7 @@
 
 typedef bool bool_t;
 
+
 typedef enum {GAIN1 , GAIN2 , GAIN64 , GAIN128} gain_t;
 typedef enum {CHANNEL_IN1 , CHANNEL_IN2 , CHANNEL_TEMP} analog_input_t;
 
@@ -39,6 +40,7 @@ typedef enum {
 
 typedef struct {
 	bool_t newdata ;				// Indica cuando un nuevo dato está listo
+	bool_t state ;					// Estado de la adquisición
 	gain_t gain  ;	  				// Indica la ganancia que se encuentra setea
 	analog_input_t analog_input ;	// Indica el canal que se encuentra seleccionado
 	speed_t speed;					// Indica la velocidad de adquisición
@@ -51,18 +53,21 @@ typedef struct {
 
 /*=====[Prototypes (declarations) of public functions]=======================*/
 
-void adc_Init(adc_t *init_adc);
+void adc_Init(adc_t *adc);
 
 // Devuelve un dato adquirido
 void adc_GetData(void);
 
 // Habilita la conversion de datos
-void adc_Go(void);
+void adc_Go(adc_t * adc);
 
 // Detiene la conversion de datos
-void adc_Stop(void);
+void adc_Stop(adc_t * adc);
 
+// Actualiza el modo de  funcionamiento
+void adc_Config(adc_t * adc);
 
+bool_t adc_newData(adc_t * adc);
 /*=====[Prototypes (declarations) of public interrupt functions]=============*/
 
 #endif /* INC_API_ADC_H_ */
