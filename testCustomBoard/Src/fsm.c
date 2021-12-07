@@ -9,7 +9,8 @@
 #include "fsm.h"
 #include "API_cmdUART.h"
 #include "API_adc.h"
-
+#include "API_buzzer.h"
+#include <stdio.h>
 /*=====[Inclusions of private function dependencies]=========================*/
 
 /*=====[Definition macros of private constants]==============================*/
@@ -34,14 +35,14 @@ typedef enum{
 adc_t adc1;
 fsmLoggState_t fsmLoggState;
 uint8_t *command;
-uint32_t data=0;
+volatile uint32_t data=0;
 extern volatile uint32_t adc_data;
 
 /*=====[Definitions of private global variables]=============================*/
 
 /*=====[Prototypes (declarations) of private functions]======================*/
 
-bool_t receiveParameters(cmd_t param, adc_t * adc);
+bool receiveParameters(cmd_t param, adc_t * adc);
 void send_Status(adc_t * adc);
 void fsmError( void );
 
@@ -55,8 +56,9 @@ void fsmInit( void )
 	adc1.speed = LOW_SPEED;
 	adc1.pwr = PWR_DISABLE;
 	adc_Init(&adc1);
-
+	printf("\n\r");
 	printf("%s",estadoIdle);
+	Buzzer_Beep(10);
    	fsmLoggState = IDLE;
 }
 
@@ -65,6 +67,7 @@ void fsmUpdate(void)
 	switch(fsmLoggState){
 		case IDLE:
 			if(true == cmdUart_Receive(command)){
+				Buzzer_Beep(10);
 				switch(*command){
 					case configAQ:
 						printf("%s",estadoConfig);
@@ -76,6 +79,7 @@ void fsmUpdate(void)
 						fsmLoggState = ACQUIRE;
 						break;
 					default:
+						Buzzer_Beep(300);
 						printf("COMANDO NO VALIDO \n\r");
 						break;
 					}
@@ -84,6 +88,7 @@ void fsmUpdate(void)
 
 		case CONFIG:
 			if(true == cmdUart_Receive(command)){
+				Buzzer_Beep(10);
 				if(exitCONFIG == *command){
 					send_Status(&adc1);
 					printf("%s",estadoIdle);
@@ -94,6 +99,7 @@ void fsmUpdate(void)
 						printf("Parámetro recibido \n\r");
 						adc_Config(&adc1);
 						}else{
+						Buzzer_Beep(300);
 						printf("COMANDO NO VALIDO \n\r");
 						}
 				}
@@ -102,6 +108,7 @@ void fsmUpdate(void)
 
 		case ACQUIRE:
 			if(true == cmdUart_Receive(command)){
+				Buzzer_Beep(10);
 				switch(*command){
 					case stopAQ:
 						adc_Stop();
@@ -113,6 +120,7 @@ void fsmUpdate(void)
 						fsmLoggState = CONFIG;
 						break;
 					default:
+						Buzzer_Beep(300);
 						printf("COMANDO NO VALIDO \n\r");
 						break;
 				}
@@ -120,8 +128,7 @@ void fsmUpdate(void)
 			if(true == adc_newData())
 			{
 				data=adc_readData();
-			//	HAL_UART_Transmit(&huart, (uint32_t)&adc_data, sizeof(data), 10);
-				printf("%x \n\r",data);//Lectura y envío de datos por la UART
+				printf("%x \n\r",adc_data);
 			}
 			break;
 
@@ -133,8 +140,8 @@ void fsmUpdate(void)
 
 /*=====[Implementations of private functions]================================*/
 
-bool_t receiveParameters(cmd_t param, adc_t * adc){
-	bool_t retVal = true;
+bool receiveParameters(cmd_t param, adc_t * adc){
+	bool retVal = true;
 	switch(param){
 		case cmdGAIN1:
 			adc->gain = GAIN1;
@@ -179,7 +186,7 @@ bool_t receiveParameters(cmd_t param, adc_t * adc){
 
 void send_Status(adc_t * adc){
 	printf("************ CONFIGURACION ***************** \n\r");
-	printf("POWER: %d \n\r",adc->gain);
+	printf("POWER: %d \n\r",adc->pwr);
 	printf("Ganancia: %d \n\r",adc->gain);
 	printf("Velocidad de adquisición: %d  \n\r", adc->speed);
 	printf("Canal de entrada: %d \n\r", adc->analog_input);

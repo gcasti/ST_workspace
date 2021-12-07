@@ -12,6 +12,7 @@
 #include "API_cmdUART.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f767_indicador_v1.h"
+#include <stdio.h>
 
 /*=====[Inclusions of private function dependencies]=========================*/
 
@@ -48,8 +49,8 @@ void cmdUart_Init(void){
 /**
  * Chequea si se recibe un byte desde la UART y que sea un comando válido de la lista
  */
-bool_t cmdUart_Receive(uint8_t* cmd){
-	bool_t retVal = false;
+bool cmdUart_Receive(uint8_t* cmd){
+	bool retVal = false;
 	uint8_t cmd_temp=0;
 
 	if(HAL_UART_Receive(&huart, &cmd_temp , 1, 10) == HAL_OK){

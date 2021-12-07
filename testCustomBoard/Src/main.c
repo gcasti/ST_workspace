@@ -8,7 +8,10 @@
 /*=====[Inclusion of own header]=============================================*/
 
 #include "main.h"
-
+#include "stm32f7xx_hal.h"  		/* <- HAL include */
+#include "stm32f767_indicador_v1.h"
+#include "API_cmdUART.h"
+#include "fsm.h"
 /*=====[Inclusions of private function dependencies]=========================*/
 
 /*=====[Definition macros of private constants]==============================*/
@@ -37,12 +40,15 @@ static void Error_Handler(void);
 
 int main(void)
 {
+
 	HAL_Init();
 	SystemClock_Config();	// Configuración del reloj
 							// Se utiliza el reloj interno a 180 Mhz para el core
-	BSP_Buzzer_Init();
+
+	Buzzer_Init();
+
 	cmdUart_Init();			// Inicio del módulo UART para recepción de comandos
-	BSP_BuzzerBeep(10);
+
 	fsmInit( );				// Inicio de la máquina de estados
 	while (1)				// Bucle infinito
 	{

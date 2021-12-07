@@ -10,7 +10,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
-#include <stdbool.h>
 
 
 #define BUZZER_PORT GPIOA
@@ -33,17 +32,18 @@
 #define AD_DRDY_PIN GPIO_PIN_14
 #define AD_DRDY_GPIO_PORT GPIOB
 
-
+// Variables públicas
 SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart;
 
-void BSP_Buzzer_Init(void);
-void BSP_BuzzerBeep(uint32_t period);
-void BSP_BuzzerStop();
 
+
+// Funciones
 void BSP_UART_Init(void);
 
 // Configura el ADC
 void BSP_Adc_Init(void);
+
+void BSP_Buzzer_Init(void);
 
 #endif /* BSP_STM32F767_INDICADOR_V1_STM32F767_INDICADOR_V1_H_ */

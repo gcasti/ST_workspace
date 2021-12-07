@@ -29,11 +29,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
-#include "stm32f7xx_hal.h"  		/* <- HAL include */
-#include "stm32f7xx_nucleo_144.h" 	/* <- BSP include */
-#include "stm32f767_indicador_v1.h"
-#include "API_cmdUART.h"
-#include "fsm.h"
+#include <stdbool.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 //#define NUCLEO

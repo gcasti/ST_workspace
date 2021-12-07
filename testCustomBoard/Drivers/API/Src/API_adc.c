@@ -19,8 +19,8 @@
 
 /*=====[Definitions of private data types]===================================*/
 
-static	bool_t newdata = false;		// Indica cuando existe un nuevo dato disponible
-static	bool_t adc_state = false;	// Estado de la adquisición
+volatile bool newdata = false;		// Indica cuando existe un nuevo dato disponible
+static	bool adc_state = false;	// Estado de la adquisición
 volatile uint32_t adc_data ;
 
 /*=====[Definitions of external public global variables]=====================*/
@@ -37,7 +37,7 @@ void adc_SetInput(analog_input_t analog_input);	// Selecciona el canal de entrad
 void adc_SetSpeed(speed_t speed);				// Configura la velocidad de adquisición
 void adc_SetPowerdown(pwr_t pwr);				// Coloca el ADC en modo de bajo consumo
 void adc_HwConfig(adc_t * adc);		// Configura todo el hardware
-bool_t getStatus(void);				// Devuelve el estado de operación
+bool getStatus(void);				// Devuelve el estado de operación
 
 /*=====[Implementations of public functions]=================================*/
 
@@ -57,7 +57,7 @@ void adc_Stop(void){
 	adc_state = false;
 };
 
-bool_t adc_newData(void){
+bool adc_newData(void){
 	return newdata;
 };
 
@@ -78,24 +78,25 @@ void adc_Config(adc_t * adc){
 
 /*=====[Implementations of interrupt functions]==============================*/
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	uint8_t datatemp[4];
 
-	__disable_irq();
+//	__disable_irq();
 	HAL_SPI_MspInit(&hspi2);
 	HAL_SPI_Receive(&hspi2,datatemp,3, 100);
 	HAL_SPI_MspDeInit(&hspi2);
 
 	adc_data = ((uint32_t)datatemp[0]<<16) | ((uint32_t)datatemp[1]<<8)|(uint32_t)datatemp[2];
+	//adc_data = 0x45452541;
 	newdata=true;
-	__enable_irq();
+//	__enable_irq();
 }
 
 /*=====[Implementations of private functions]=================================*/
 
 
-bool_t getStatus()
+bool getStatus()
 {	return adc_state;
 	}
 

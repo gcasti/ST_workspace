@@ -16,13 +16,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdio.h>
+
 /*=====[Definition macros of public constants]===============================*/
 
 /*=====[Public function-like macros]=========================================*/
 
 /*=====[Definitions of public data types]====================================*/
-typedef bool bool_t;
 
 typedef enum{
 	configAQ 		= 0x00,
@@ -51,7 +50,7 @@ typedef enum{
 void cmdUart_Init(void);
 
 // Recibe un comando desde la uart
-bool_t cmdUart_Receive(uint8_t * cmd);
+bool cmdUart_Receive(uint8_t * cmd);
 
 void sendData(void);
 

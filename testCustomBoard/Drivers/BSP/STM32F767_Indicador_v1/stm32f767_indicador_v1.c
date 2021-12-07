@@ -6,11 +6,11 @@
  */
 
 #include "stm32f767_indicador_v1.h"
+#include <stdbool.h>
 
 
-//extern TIM_HandleTypeDef htim4; /* Timer Buzzer off */
 extern SPI_HandleTypeDef hspi2;
-TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim4;
 volatile uint8_t dato_temp[3];
 
 static void BSP_SPI_Init(void);
@@ -32,25 +32,6 @@ void BSP_Buzzer_Init()
 	HAL_GPIO_Init(BUZZER_PORT, &GPIO_InitStruct);
 
 	BSP_TIM4_Init();
-}
-
-/*
- * Función que prende el buzzer durante 'period' mili-segundos.
- */
-void BSP_BuzzerBeep(uint32_t period)
-{
-	htim4.Init.Period = period;
-	if (HAL_TIM_Base_Init(&htim4) != HAL_OK) {
-		return;
-	}
-	HAL_TIM_Base_Start_IT(&htim4);
-	HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
-}
-
-inline void BSP_BuzzerStop()
-{
-	HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
-	HAL_TIM_Base_Stop(&htim4);
 }
 
 void BSP_Adc_Init(void)
@@ -137,7 +118,6 @@ void BSP_Adc_Init(void)
 
 	}
 
-
 static void BSP_SPI_Init(void)
 {
   /* SPI parameter configuration*/
@@ -194,8 +174,7 @@ static void BSP_TIM4_Init(void)
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
-    //Error_Handler();
-  }
+     }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
   if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
   {

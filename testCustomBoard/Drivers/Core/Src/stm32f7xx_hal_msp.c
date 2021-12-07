@@ -148,8 +148,8 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 	    HAL_GPIO_Init(AD_DRDY_GPIO_PORT, &GPIO_InitStruct);
 
 	    	/* EXTI interrupt init*/
-	    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-	    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+	 //   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+	 //   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 	  /* USER CODE END SPI2_MspDeInit 1 */
 	  }
 

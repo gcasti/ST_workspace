@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f7xx_it.h"
+#include <stdbool.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32f7xx_nucleo_144.h"
@@ -31,7 +32,10 @@
 /* USER CODE BEGIN TD */
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim4;
-extern volatile uint8_t dato_temp[3];
+
+
+extern volatile uint32_t adc_data ;
+extern volatile bool newdata ;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -209,15 +213,19 @@ void SysTick_Handler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
- // uint8_t prueba[3];
-//	__disable_irq();
-  /* USER CODE END EXTI15_10_IRQn 0 */
+
+	uint8_t datatemp[4];
+
+	HAL_SPI_MspInit(&hspi2);
+	HAL_SPI_Receive(&hspi2,datatemp,3, 100);
+	HAL_SPI_MspDeInit(&hspi2);
+
+	adc_data = ((uint32_t)datatemp[0]<<16) | ((uint32_t)datatemp[1]<<8)|(uint32_t)datatemp[2];
+	newdata=true;
+
+	/* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
- // HAL_SPI_MspInit(&hspi2);
- // HAL_SPI_Receive(&hspi2,(uint8_t *)prueba,1, 1000);
- // HAL_SPI_MspDeInit(&hspi2);
- // __enable_irq();
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
@@ -238,7 +246,7 @@ void TIM4_IRQHandler(void)
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
-  BSP_BuzzerStop();
+  Buzzer_Stop();
 
   /* USER CODE END TIM4_IRQn 1 */
 }
