@@ -1,12 +1,26 @@
-/*
- * fsm.c
+/*==========[Maquina de estado finito]========================================
+ * Copyright 2021 Guillermo Luis Castiglioni <guillermo.castiglioni@gmail.com>
+ * All rights reserved.
  *
- *  Created on: Dec 5, 2021
- *      Author: gcasti
+ * Version: 0.1.0
+ * Creation Date: 2021/11/01
  */
+/*=====[Inclusion of own header]=============================================*/
 #include "fsm.h"
 #include "API_cmdUART.h"
 #include "API_adc.h"
+
+/*=====[Inclusions of private function dependencies]=========================*/
+
+/*=====[Definition macros of private constants]==============================*/
+
+const char estadoIdle[] = "En espera \n\r";
+const char estadoConfig[] = "Modo configuración \n\r";
+const char estadoAQ[] = "Adquiriendo datos \n\r";
+
+/*=====[Private function-like macros]========================================*/
+
+/*=====[Definitions of private data types]===================================*/
 
 typedef enum{
 	IDLE ,
@@ -14,16 +28,111 @@ typedef enum{
 	ACQUIRE
 } fsmLoggState_t;
 
-adc_t adc1;
-const char estadoIdle[] = "\n\rEn espera \n\r";
-const char estadoConfig [] = "Modo configuración \n\r";
-const char estadoAQ[] = "ADquiriendo datos \n\r";
+/*=====[Definitions of external public global variables]=====================*/
 
-void fsmError( void );
+/*=====[Definitions of public global variables]==============================*/
+adc_t adc1;
 fsmLoggState_t fsmLoggState;
 uint8_t *command;
+uint32_t data=0;
+extern volatile uint32_t adc_data;
 
-// Funcion privada de FSM
+/*=====[Definitions of private global variables]=============================*/
+
+/*=====[Prototypes (declarations) of private functions]======================*/
+
+bool_t receiveParameters(cmd_t param, adc_t * adc);
+void send_Status(adc_t * adc);
+void fsmError( void );
+
+
+/*=====[Implementations of public functions]=================================*/
+
+void fsmInit( void )
+{
+	adc1.analog_input = CHANNEL_TEMP;
+	adc1.gain = GAIN1;
+	adc1.speed = LOW_SPEED;
+	adc1.pwr = PWR_DISABLE;
+	adc_Init(&adc1);
+
+	printf("%s",estadoIdle);
+   	fsmLoggState = IDLE;
+}
+
+void fsmUpdate(void)
+{
+	switch(fsmLoggState){
+		case IDLE:
+			if(true == cmdUart_Receive(command)){
+				switch(*command){
+					case configAQ:
+						printf("%s",estadoConfig);
+						fsmLoggState = CONFIG;
+						break;
+					case startAQ:
+						printf("%s",estadoAQ);
+						adc_Start();
+						fsmLoggState = ACQUIRE;
+						break;
+					default:
+						printf("COMANDO NO VALIDO \n\r");
+						break;
+					}
+				}
+			break;
+
+		case CONFIG:
+			if(true == cmdUart_Receive(command)){
+				if(exitCONFIG == *command){
+					send_Status(&adc1);
+					printf("%s",estadoIdle);
+					fsmLoggState = IDLE;
+				}else{
+					if(true == receiveParameters(*command,&adc1))
+					{
+						printf("Parámetro recibido \n\r");
+						adc_Config(&adc1);
+						}else{
+						printf("COMANDO NO VALIDO \n\r");
+						}
+				}
+			}
+			break;
+
+		case ACQUIRE:
+			if(true == cmdUart_Receive(command)){
+				switch(*command){
+					case stopAQ:
+						adc_Stop();
+						printf("%s",estadoIdle);
+						fsmLoggState = IDLE;
+						break;
+					case configAQ:
+						printf("%s",estadoConfig);
+						fsmLoggState = CONFIG;
+						break;
+					default:
+						printf("COMANDO NO VALIDO \n\r");
+						break;
+				}
+			}
+			if(true == adc_newData())
+			{
+				data=adc_readData();
+			//	HAL_UART_Transmit(&huart, (uint32_t)&adc_data, sizeof(data), 10);
+				printf("%x \n\r",data);//Lectura y envío de datos por la UART
+			}
+			break;
+
+		default:
+			fsmError();
+			break;
+	}
+}
+
+/*=====[Implementations of private functions]================================*/
+
 bool_t receiveParameters(cmd_t param, adc_t * adc){
 	bool_t retVal = true;
 	switch(param){
@@ -67,6 +176,7 @@ bool_t receiveParameters(cmd_t param, adc_t * adc){
 	return retVal;
 }
 
+
 void send_Status(adc_t * adc){
 	printf("************ CONFIGURACION ***************** \n\r");
 	printf("POWER: %d \n\r",adc->gain);
@@ -76,112 +186,9 @@ void send_Status(adc_t * adc){
 	printf("******************************************** \n\r");
 }
 
-void fsmInit( void )
-{
-	adc1.analog_input = CHANNEL_TEMP;
-	adc1.gain = GAIN1;
-	adc1.speed = LOW_SPEED;
-	adc1.pwr = PWR_DISABLE;
-	adc_Init(&adc1);
-
-	#ifdef NUCLEO
-		BSP_LED_Init(LED1);
-		BSP_LED_Init(LED2);
-		BSP_LED_Init(LED3);
-		BSP_LED_Off(LED1);
-		BSP_LED_Off(LED2);
-		BSP_LED_Off(LED3);
-	#endif
-
-	printf("%s",estadoIdle);
-   	fsmLoggState = IDLE;   // Set initial state
-}
-
-void fsmUpdate(void)
-{
-	switch(fsmLoggState){
-		case IDLE:
-			// Verifico estado
-			BSP_LED_On(LED1);
-			BSP_LED_Off(LED2);
-			BSP_LED_Off(LED3);
-
-			if(true == cmdUart_Receive(command)){
-				switch(*command){
-					case configAQ:
-						printf("%s",estadoConfig);
-						fsmLoggState = CONFIG;
-						break;
-					case startAQ:
-						printf("%s",estadoAQ);
-						fsmLoggState = ACQUIRE;
-						break;
-					default:
-						printf("COMANDO NO VALIDO \n\r");
-						break;
-					}
-				}
-			break;
-
-		case CONFIG:
-			// Verifico estado
-			BSP_LED_Off(LED1);
-			BSP_LED_On(LED2);
-			BSP_LED_Off(LED3);
-
-			if(true == cmdUart_Receive(command)){
-				if(exitCONFIG == *command){
-					send_Status(&adc1);
-					printf("%s",estadoIdle);
-					fsmLoggState = IDLE;
-				}else{
-					if(true == receiveParameters(*command,&adc1))
-					{
-						printf("Parámetro recibido \n\r");
-						adc_Config(&adc1);
-						}else{
-						printf("COMANDO NO VALIDO \n\r");
-						}
-				}
-			}
-			break;
-
-		case ACQUIRE:
-			// Verifico estado
-			BSP_LED_Off(LED1);
-			BSP_LED_Off(LED2);
-			BSP_LED_On(LED3);
-			// Adquisición
-
-			// Chequeo UART
-			if(true == cmdUart_Receive(command)){
-				switch(*command){
-					case stopAQ:
-						printf("%s",estadoIdle);
-						fsmLoggState = IDLE;
-						break;
-					case configAQ:
-						printf("%s",estadoConfig);
-						fsmLoggState = CONFIG;
-						break;
-					default:
-						printf("COMANDO NO VALIDO \n\r");
-						break;
-				}
-			}
-			if(true == adc_newData(&adc1))
-			{
-				//Lectura y envío de datos por la UART
-			}
-			break;
-
-		default:
-			fsmError();
-			break;
-	}
-}
-
-
 void fsmError( void ){
 
 }
+
+/*=====[Implementations of interrupt functions]==============================*/
+

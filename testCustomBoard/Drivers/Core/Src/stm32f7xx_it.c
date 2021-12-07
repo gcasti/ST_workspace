@@ -208,15 +208,15 @@ void SysTick_Handler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  uint8_t prueba[2];
-	__disable_irq();
+ // uint8_t prueba[3];
+//	__disable_irq();
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
-  HAL_SPI_MspInit(&hspi2);
-  HAL_SPI_Receive(&hspi2,prueba,2, 100);
-  HAL_SPI_MspDeInit(&hspi2);
-  __enable_irq();
+ // HAL_SPI_MspInit(&hspi2);
+ // HAL_SPI_Receive(&hspi2,(uint8_t *)prueba,1, 1000);
+ // HAL_SPI_MspDeInit(&hspi2);
+ // __enable_irq();
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 

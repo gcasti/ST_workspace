@@ -1,13 +1,12 @@
-/*=====[Module Name]===========================================================
- * Copyright 2019 Esteban Daniel VOLENTINI <evolentini@gmail.com>
+/*============= [ API_adc ] =================================================
+ * Copyright 2021 Guillermo Luis Castiglioni <guillermo.castiglioni@gmail.com>
  * All rights reserved.
- * License: BSD-3-Clause <https://opensource.org/licenses/BSD-3-Clause>)
  *
  * Version: 0.1.0
- * Creation Date: 2019/03/01
+ * Creation Date: 2021/11/01
  */
+/*=====[Inclusion of own header]=============================================*/
 
-/*=====[Avoid multiple inclusion - begin]====================================*/
 
 #ifndef INC_API_ADC_H_
 #define INC_API_ADC_H_
@@ -38,8 +37,6 @@ typedef enum {
 } pwr_t;
 
 typedef struct {
-	bool_t newdata ;				// Indica cuando un nuevo dato está listo
-	bool_t state ;					// Estado de la adquisición
 	gain_t gain  ;	  				// Indica la ganancia que se encuentra setea
 	analog_input_t analog_input ;	// Indica el canal que se encuentra seleccionado
 	speed_t speed;					// Indica la velocidad de adquisición
@@ -55,19 +52,19 @@ typedef struct {
 
 void adc_Init(adc_t *adc);
 
-// Devuelve un dato adquirido
-void adc_GetData(void);
-
 // Habilita la conversion de datos
-void adc_Go(adc_t * adc);
+void adc_Start();
 
 // Detiene la conversion de datos
-void adc_Stop(adc_t * adc);
+void adc_Stop();
 
 // Actualiza el modo de  funcionamiento
 void adc_Config(adc_t * adc);
 
-bool_t adc_newData(adc_t * adc);
+bool_t adc_newData(void);
+
+uint32_t adc_readData(void);
+
 /*=====[Prototypes (declarations) of public interrupt functions]=============*/
 
 #endif /* INC_API_ADC_H_ */

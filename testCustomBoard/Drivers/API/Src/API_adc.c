@@ -1,12 +1,10 @@
-/*=====[Module Name]===========================================================
- * Copyright 2019 Esteban Daniel VOLENTINI <evolentini@gmail.com>
+/*============= [ API_adc ] =================================================
+ * Copyright 2021 Guillermo Luis Castiglioni <guillermo.castiglioni@gmail.com>
  * All rights reserved.
- * License: BSD-3-Clause <https://opensource.org/licenses/BSD-3-Clause>)
  *
  * Version: 0.1.0
- * Creation Date: 2019/03/01
+ * Creation Date: 2021/11/01
  */
-
 /*=====[Inclusion of own header]=============================================*/
 
 #include "API_adc.h"
@@ -21,6 +19,10 @@
 
 /*=====[Definitions of private data types]===================================*/
 
+static	bool_t newdata = false;		// Indica cuando existe un nuevo dato disponible
+static	bool_t adc_state = false;	// Estado de la adquisición
+volatile uint32_t adc_data ;
+
 /*=====[Definitions of external public global variables]=====================*/
 
 /*=====[Definitions of public global variables]==============================*/
@@ -30,14 +32,79 @@
 
 /*=====[Prototypes (declarations) of private functions]======================*/
 
-void adc_SetGain(gain_t gain_pga);	// Configura la ganancia del PGA
+void adc_SetGain(gain_t gain_pga);				// Configura la ganancia del PGA
 void adc_SetInput(analog_input_t analog_input);	// Selecciona el canal de entrada
-void adc_SetSpeed(speed_t speed);	// Configura la velocidad de adquisición
-void adc_SetPowerdown(pwr_t pwr);		// Coloca el ADC en modo de bajo consumo
+void adc_SetSpeed(speed_t speed);				// Configura la velocidad de adquisición
+void adc_SetPowerdown(pwr_t pwr);				// Coloca el ADC en modo de bajo consumo
+void adc_HwConfig(adc_t * adc);		// Configura todo el hardware
+bool_t getStatus(void);				// Devuelve el estado de operación
 
+/*=====[Implementations of public functions]=================================*/
+
+void adc_Init(adc_t * adc){
+	BSP_Adc_Init();
+	adc_HwConfig(adc);
+	adc_Stop(adc);
+}
+
+void adc_Start(void){
+	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+    adc_state = true;
+};
+
+void adc_Stop(void){
+	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+	adc_state = false;
+};
+
+bool_t adc_newData(void){
+	return newdata;
+};
+
+uint32_t adc_readData(void){
+	if(adc_newData()){
+		newdata = false;
+	}
+	return adc_data;
+}
+
+void adc_Config(adc_t * adc){
+	if (true == getStatus()){
+		adc_Stop();
+		}
+	adc_HwConfig(adc);
+}
+
+
+/*=====[Implementations of interrupt functions]==============================*/
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+
+	uint8_t datatemp[4];
+
+	__disable_irq();
+	HAL_SPI_MspInit(&hspi2);
+	HAL_SPI_Receive(&hspi2,datatemp,3, 100);
+	HAL_SPI_MspDeInit(&hspi2);
+
+	adc_data = ((uint32_t)datatemp[0]<<16) | ((uint32_t)datatemp[1]<<8)|(uint32_t)datatemp[2];
+	newdata=true;
+	__enable_irq();
+}
 
 /*=====[Implementations of private functions]=================================*/
 
+
+bool_t getStatus()
+{	return adc_state;
+	}
+
+void adc_HwConfig(adc_t * adc){
+	adc_SetGain(adc->gain);
+	adc_SetInput(adc->analog_input);
+	adc_SetSpeed(adc->speed);
+	adc_SetPowerdown(adc->pwr);
+}
 void adc_SetGain(gain_t gain_pga)
 {
 	switch(gain_pga){
@@ -92,56 +159,6 @@ void adc_SetPowerdown(pwr_t pwr)
 {
 	HAL_GPIO_WritePin(AD_PDWN_GPIO_PORT, AD_PDWN_PIN, pwr);
 }
-
-
-bool_t getStatus(adc_t * adc)
-{	return adc->state;
-	}
-
-void HW_Config(adc_t * adc){
-	adc_SetGain(adc->gain);
-	adc_SetInput(adc->analog_input);
-	adc_SetSpeed(adc->speed);
-	adc_SetPowerdown(adc->pwr);
-}
-
-/*=====[Implementations of public functions]=================================*/
-
-void adc_Init(adc_t * adc){
-	BSP_Adc_Init();
-	HW_Config(adc);
-	adc_Stop(adc);
-}
-
-// Habilita la conversion de datos
-void adc_Go(adc_t * adc){
-	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-    adc->state = true;
-};
-
-// Detiene la conversion de datos
-void adc_Stop(adc_t * adc){
-	adc->state = false;
-};
-
-bool_t adc_newData(adc_t * adc){
-	return true;
-};
-
-void adc_Config(adc_t * adc){
-	if (true == getStatus(adc)){
-		adc_Stop(adc);
-		HW_Config(adc);
-	}
-}
-
-
-/*=====[Implementations of interrupt functions]==============================*/
-
-/*=====[Implementations of private functions]================================*/
-
-
-
 
 
 

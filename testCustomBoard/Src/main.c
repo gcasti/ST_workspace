@@ -1,73 +1,50 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
+/*==========[Main]===========================================================
+ * Copyright 2021 Guillermo Luis Castiglioni <guillermo.castiglioni@gmail.com>
+ * All rights reserved.
+ *
+ * Version: 0.1.0
+ * Creation Date: 2021/11/01
+ */
+/*=====[Inclusion of own header]=============================================*/
+
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+/*=====[Inclusions of private function dependencies]=========================*/
 
-/* USER CODE END Includes */
+/*=====[Definition macros of private constants]==============================*/
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-extern SPI_HandleTypeDef hspi2;
+/*=====[Private function-like macros]========================================*/
 
-/* USER CODE END PTD */
+/*=====[Definitions of private data types]===================================*/
 
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
+/*=====[Definitions of external public global variables]=====================*/
 
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
+/*=====[Definitions of public global variables]==============================*/
 
-/* USER CODE END PM */
+/*=====[Definitions of private global variables]=============================*/
 
-/* Private variables ---------------------------------------------------------*/
+/*=====[Prototypes (declarations) of private functions]======================*/
 
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 
+/*=====[Implementations of public functions]=================================*/
 
-/* Private functions ---------------------------------------------------------*/
+/*=====[Implementations of interrupt functions]==============================*/
+
+/*=====[Implementations of private functions]================================*/
 
 
 int main(void)
 {
-
 	HAL_Init();
+	SystemClock_Config();	// Configuración del reloj
+							// Se utiliza el reloj interno a 180 Mhz para el core
 
-  /* Configure the system clock to 180 MHz */
-	SystemClock_Config();
+	cmdUart_Init();			// Inicio del módulo UART para recepción de comandos
 
-	cmdUart_Init();
-
-	fsmInit( );
-
-  /* Infinite loop */
-	while (1)
+	fsmInit( );				// Inicio de la máquina de estados
+	while (1)				// Bucle infinito
 	{
 		fsmUpdate();
 	}
@@ -126,7 +103,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
-
 
 /**
   * @brief  This function is executed in case of error occurrence.
