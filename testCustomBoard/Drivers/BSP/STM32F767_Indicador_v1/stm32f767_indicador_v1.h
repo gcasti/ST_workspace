@@ -13,8 +13,8 @@
 #include <stdbool.h>
 
 
-#define BUZZER_PORT GPIOC
-#define BUZZER_PIN GPIO_PIN_10
+#define BUZZER_PORT GPIOA
+#define BUZZER_PIN GPIO_PIN_15
 
 #define AD_TEMP_PIN GPIO_PIN_15
 #define AD_TEMP_GPIO_PORT GPIOB
@@ -39,7 +39,7 @@ UART_HandleTypeDef huart;
 
 void BSP_Buzzer_Init(void);
 void BSP_BuzzerBeep(uint32_t period);
-extern void BSP_BuzzerStop();
+void BSP_BuzzerStop();
 
 void BSP_UART_Init(void);
 

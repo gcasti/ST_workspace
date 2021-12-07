@@ -30,6 +30,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
 extern SPI_HandleTypeDef hspi2;
+extern TIM_HandleTypeDef htim4;
 extern volatile uint8_t dato_temp[3];
 /* USER CODE END TD */
 
@@ -220,7 +221,26 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
-/* USER CODE BEGIN 1 */
+/******************************************************************************/
+/* STM32F7xx Peripheral Interrupt Handlers                                    */
+/* Add here the Interrupt Handlers for the used peripherals.                  */
+/* For the available peripheral interrupt handler names,                      */
+/* please refer to the startup file (startup_stm32f7xx.s).                    */
+/******************************************************************************/
 
-/* USER CODE END 1 */
+/**
+  * @brief This function handles TIM4 global interrupt.
+  */
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+  BSP_BuzzerStop();
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

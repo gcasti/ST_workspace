@@ -10,49 +10,48 @@
 
 //extern TIM_HandleTypeDef htim4; /* Timer Buzzer off */
 extern SPI_HandleTypeDef hspi2;
+TIM_HandleTypeDef htim4;
 volatile uint8_t dato_temp[3];
 
 static void BSP_SPI_Init(void);
+static void BSP_TIM4_Init(void);
 
-/*
+
 void BSP_Buzzer_Init()
 {
 	 GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
-//	/*Configure GPIO pin : BUZZER */
-/*	GPIO_InitStruct.Pin = BUZZER_PIN;
+	/*Configure GPIO pin : BUZZER */
+	GPIO_InitStruct.Pin = BUZZER_PIN;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(BUZZER_PORT, &GPIO_InitStruct);
 
+	BSP_TIM4_Init();
 }
-
-
 
 /*
  * Función que prende el buzzer durante 'period' mili-segundos.
  */
-/*void BSP_BuzzerBeep(uint32_t period)
+void BSP_BuzzerBeep(uint32_t period)
 {
 	htim4.Init.Period = period;
 	if (HAL_TIM_Base_Init(&htim4) != HAL_OK) {
 		return;
 	}
-	//if (1) {
-		HAL_TIM_Base_Start_IT(&htim4);
-		HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
-	//}
+	HAL_TIM_Base_Start_IT(&htim4);
+	HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
 }
 
 inline void BSP_BuzzerStop()
 {
 	HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
 	HAL_TIM_Base_Stop(&htim4);
-}*/
+}
 
 void BSP_Adc_Init(void)
 {
@@ -182,3 +181,30 @@ void BSP_UART_Init(void)
 
 }
 
+static void BSP_TIM4_Init(void)
+{
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 51000;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 20;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    //Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+   // Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    //Error_Handler();
+  }
+}

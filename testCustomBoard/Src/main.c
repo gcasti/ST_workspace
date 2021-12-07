@@ -40,9 +40,9 @@ int main(void)
 	HAL_Init();
 	SystemClock_Config();	// Configuración del reloj
 							// Se utiliza el reloj interno a 180 Mhz para el core
-
+	BSP_Buzzer_Init();
 	cmdUart_Init();			// Inicio del módulo UART para recepción de comandos
-
+	BSP_BuzzerBeep(10);
 	fsmInit( );				// Inicio de la máquina de estados
 	while (1)				// Bucle infinito
 	{
