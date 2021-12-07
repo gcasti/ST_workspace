@@ -19,28 +19,28 @@
 
 /*=====[Definitions of private data types]===================================*/
 
+/*=====[Definitions of public global variables]==============================*/
+
 volatile bool newdata = false;		// Indica cuando existe un nuevo dato disponible
-static	bool adc_state = false;	// Estado de la adquisición
 volatile uint32_t adc_data ;
 
 /*=====[Definitions of external public global variables]=====================*/
-
-/*=====[Definitions of public global variables]==============================*/
-
 /*=====[Definitions of private global variables]=============================*/
+
+static	bool adc_state = false;	// Estado de la adquisición
 
 
 /*=====[Prototypes (declarations) of private functions]======================*/
 
-void adc_SetGain(gain_t gain_pga);				// Configura la ganancia del PGA
-void adc_SetInput(analog_input_t analog_input);	// Selecciona el canal de entrada
-void adc_SetSpeed(speed_t speed);				// Configura la velocidad de adquisición
-void adc_SetPowerdown(pwr_t pwr);				// Coloca el ADC en modo de bajo consumo
-void adc_HwConfig(adc_t * adc);		// Configura todo el hardware
+static void adc_SetGain(gain_t gain_pga);				// Configura la ganancia del PGA
+static void adc_SetInput(analog_input_t analog_input);	// Selecciona el canal de entrada
+static void adc_SetSpeed(speed_t speed);				// Configura la velocidad de adquisición
+static void adc_SetPowerdown(pwr_t pwr);				// Coloca el ADC en modo de bajo consumo
+static void adc_HwConfig(adc_t * adc);					// Configura el hardware
 
-bool getStatus(void);				// Devuelve el estado de operación
-float temperatureData(uint32_t code);
-float tensionData(uint32_t code);
+static bool getStatus(void);							// Devuelve el estado de operación
+static float temperatureData(uint32_t code);
+static float tensionData(uint32_t code);
 
 /*=====[Implementations of public functions]=================================*/
 
@@ -86,25 +86,7 @@ void adc_Config(adc_t * adc){
 }
 
 
-/*=====[Implementations of interrupt functions]==============================*/
-
-/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-
-	uint8_t datatemp[4];
-
-//	__disable_irq();
-	HAL_SPI_MspInit(&hspi2);
-	HAL_SPI_Receive(&hspi2,datatemp,3, 100);
-	HAL_SPI_MspDeInit(&hspi2);
-
-	adc_data = ((uint32_t)datatemp[0]<<16) | ((uint32_t)datatemp[1]<<8)|(uint32_t)datatemp[2];
-	//adc_data = 0x45452541;
-	newdata=true;
-//	__enable_irq();
-}
-
-/*=====[Implementations of private functions]=================================*/
-
+/*=====[Implementations of private functions]================================*/
 float tensionData(uint32_t code){
 
 	return (float)code*298.023e-9;

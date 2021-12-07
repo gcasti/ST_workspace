@@ -32,19 +32,18 @@ typedef enum{
 /*=====[Definitions of external public global variables]=====================*/
 
 /*=====[Definitions of public global variables]==============================*/
-adc_t adc1;
-fsmLoggState_t fsmLoggState;
-uint8_t *command;
-float data=0;
-extern volatile uint32_t adc_data;
 
-/*=====[Definitions of private global variables]=============================*/
+/*=====[Definitions of private variables]=============================*/
+static adc_t adc1;
+static fsmLoggState_t fsmLoggState;
+static uint8_t *command;
+static float data=0;
 
 /*=====[Prototypes (declarations) of private functions]======================*/
 
-bool receiveParameters(cmd_t param, adc_t * adc);
-void send_Status(adc_t * adc);
-void fsmError( void );
+static bool receiveParameters(cmd_t param, adc_t * adc);
+static void send_Status(adc_t * adc);
+static void fsmError( void );
 
 /*=====[Implementations of public functions]=================================*/
 
