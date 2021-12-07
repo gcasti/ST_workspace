@@ -37,7 +37,10 @@ void adc_SetInput(analog_input_t analog_input);	// Selecciona el canal de entrad
 void adc_SetSpeed(speed_t speed);				// Configura la velocidad de adquisición
 void adc_SetPowerdown(pwr_t pwr);				// Coloca el ADC en modo de bajo consumo
 void adc_HwConfig(adc_t * adc);		// Configura todo el hardware
+
 bool getStatus(void);				// Devuelve el estado de operación
+float temperatureData(uint32_t code);
+float tensionData(uint32_t code);
 
 /*=====[Implementations of public functions]=================================*/
 
@@ -61,11 +64,18 @@ bool adc_newData(void){
 	return newdata;
 };
 
-uint32_t adc_readData(void){
+float adc_readData(adc_t * adc){
+	float retVal=0;
+
+	if(CHANNEL_TEMP == adc->analog_input){
+		retVal = temperatureData(adc_data);
+	}else{
+		retVal = tensionData(adc_data);
+	}
 	if(adc_newData()){
 		newdata = false;
 	}
-	return adc_data;
+	return retVal;
 }
 
 void adc_Config(adc_t * adc){
@@ -94,6 +104,18 @@ void adc_Config(adc_t * adc){
 }
 
 /*=====[Implementations of private functions]=================================*/
+
+float tensionData(uint32_t code){
+
+	return (float)code*298.023e-9;
+}
+
+float temperatureData(uint32_t code){
+	float temperature;
+	temperature = 379e-6*(tensionData(code)-111.7e-3)+25;
+
+	return temperature;
+}
 
 
 bool getStatus()

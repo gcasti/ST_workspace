@@ -11,6 +11,7 @@
 #include "stm32f7xx_hal.h"  		/* <- HAL include */
 #include "stm32f767_indicador_v1.h"
 #include "API_cmdUART.h"
+#include "API_buzzer.h"
 #include "fsm.h"
 /*=====[Inclusions of private function dependencies]=========================*/
 

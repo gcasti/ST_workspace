@@ -60,7 +60,7 @@ void adc_Config(adc_t * adc);
 
 bool adc_newData(void);
 
-uint32_t adc_readData(void);
+float adc_readData(adc_t * adc);
 
 /*=====[Prototypes (declarations) of public interrupt functions]=============*/
 

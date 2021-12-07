@@ -35,7 +35,7 @@ typedef enum{
 adc_t adc1;
 fsmLoggState_t fsmLoggState;
 uint8_t *command;
-volatile uint32_t data=0;
+float data=0;
 extern volatile uint32_t adc_data;
 
 /*=====[Definitions of private global variables]=============================*/
@@ -45,7 +45,6 @@ extern volatile uint32_t adc_data;
 bool receiveParameters(cmd_t param, adc_t * adc);
 void send_Status(adc_t * adc);
 void fsmError( void );
-
 
 /*=====[Implementations of public functions]=================================*/
 
@@ -127,8 +126,8 @@ void fsmUpdate(void)
 			}
 			if(true == adc_newData())
 			{
-				data=adc_readData();
-				printf("%x \n\r",adc_data);
+				data=adc_readData(&adc1);
+				printf("%f \n\r" , data);
 			}
 			break;
 
@@ -192,6 +191,7 @@ void send_Status(adc_t * adc){
 	printf("Canal de entrada: %d \n\r", adc->analog_input);
 	printf("******************************************** \n\r");
 }
+
 
 void fsmError( void ){
 
