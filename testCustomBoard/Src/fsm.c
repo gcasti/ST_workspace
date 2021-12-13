@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 /** =====[Definición de constantes privadas ]==========================*/
-const char estadoIdle[] = "En espera \n\r";
+const char estadoIdle[] = "\n\r  En espera \n\r";
 const char estadoConfig[] = "Modo configuración \n\r";
 const char estadoAQ[] = "Adquiriendo datos \n\r";
 
@@ -40,7 +40,6 @@ void fsmInit(void) {
 	adc1.speed = LOW_SPEED;
 	adc1.pwr = PWR_DISABLE;
 	adc_Init(&adc1);
-	uartSendString("\n\r");
 	uartSendString((char*) estadoIdle);
 	Buzzer_Beep(10);
 	fsmLoggState = IDLE;

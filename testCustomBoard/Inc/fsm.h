@@ -8,7 +8,7 @@
 
 typedef bool bool_t;
 
-/** =====[Implementación de funciones públicas ]==========================*/
+/** =====[Definición de funciones públicas ]==========================*/
 /**
  * @brief Inicia la máquina de estado
  */

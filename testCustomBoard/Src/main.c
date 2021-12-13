@@ -1,11 +1,14 @@
-/*==========[Main]===========================================================
- * Copyright 2021 Guillermo Luis Castiglioni <guillermo.castiglioni@gmail.com>
- * All rights reserved.
+/**
+ *  @brief Máquina de estado
+ *  Se utiliza un ADC externo de 24 bits para adquirir datos y enviarlos mediante
+ *  la UART a una terminal.
+ * 	Mediante comandos desde la UART el usuario debe configurar el modo de funcionamiento
+ * 	del ADC, inicializa y finaliza la adquisición de datos.
+ * 	Cada vez que se disponga de un dato se enviará por la UART y se emitirá un aviso sonoro empleando un buzzer.
  *
- * Version: 0.1.0
- * Creation Date: 2021/11/01
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
-/*=====[Inclusion of own header]=============================================*/
 
 #include "main.h"
 #include "stm32f7xx_hal.h"  		/* <- HAL include */
@@ -13,30 +16,10 @@
 #include "API_cmdUART.h"
 #include "API_buzzer.h"
 #include "fsm.h"
-/*=====[Inclusions of private function dependencies]=========================*/
 
-/*=====[Definition macros of private constants]==============================*/
-
-/*=====[Private function-like macros]========================================*/
-
-/*=====[Definitions of private data types]===================================*/
-
-/*=====[Definitions of external public global variables]=====================*/
-
-/*=====[Definitions of public global variables]==============================*/
-
-/*=====[Definitions of private global variables]=============================*/
-
-/*=====[Prototypes (declarations) of private functions]======================*/
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
-
-/*=====[Implementations of public functions]=================================*/
-
-/*=====[Implementations of interrupt functions]==============================*/
-
-/*=====[Implementations of private functions]================================*/
 
 
 int main(void)

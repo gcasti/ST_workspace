@@ -1,36 +1,29 @@
-/*============= [ API_adc ] =================================================
- * Copyright 2021 Guillermo Luis Castiglioni <guillermo.castiglioni@gmail.com>
- * All rights reserved.
- *
- * Version: 0.1.0
- * Creation Date: 2021/11/01
+/**
+ *  @brief Módulo para manejo del buzzer
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
-/*=====[Inclusion of own header]=============================================*/
-
 
 #ifndef API_INC_API_BUZZER_H_
 #define API_INC_API_BUZZER_H_
 
-/*=====[Inclusions of public function dependencies]==========================*/
+/** =====[Inclusión de dependencia públicas ]==========================*/
 #include <stdint.h>
 #include <stdbool.h>
 
-/*=====[Definition macros of public constants]===============================*/
-
-/*=====[Public function-like macros]=========================================*/
-
-/*=====[Definitions of public data types]====================================*/
-
-/*=====[Definitions of public global variables]==============================*/
-
-/*=====[Prototypes (declarations) of public functions]=======================*/
-
+/** =====[Definición de funciones públicas ]==========================*/
+/**
+ * @brief Inicializa los periféricos para control del buzzer
+ */
 void Buzzer_Init(void);
+
+/**
+ * @brief Activa el buzzer por un determinado tiempo
+ * @param period 		Tiempo en milisegundos
+ */
 void Buzzer_Beep(uint32_t period);
+
 void Buzzer_Stop();
 
-/*=====[Prototypes (declarations) of public interrupt functions]=============*/
-
-/*=====[C - end]===========================================================*/
 
 #endif /* API_INC_API_BUZZER_H_ */

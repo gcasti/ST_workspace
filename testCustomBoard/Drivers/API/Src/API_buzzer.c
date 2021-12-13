@@ -1,14 +1,10 @@
-/*
- * API_buzzer.c
- *
- *  Created on: 7 dic. 2021
- *      Author: gcasti
+/**
+ *  @brief Módulo para manejo del buzzer
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
 
-
-/*
- * Función que prende el buzzer durante 'period' mili-segundos.
- */
+/** =====[Inclusión de dependencia privadas ]==========================*/
 #include "API_buzzer.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f767_indicador_v1.h"
