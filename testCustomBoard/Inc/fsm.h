@@ -1,13 +1,20 @@
+/**
+ *  @brief Máquina de estado
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
+ */
 
-#include "stm32f7xx_nucleo_144.h" 	/* <- BSP include */
-#include "stm32f767_indicador_v1.h"
-#include "API_adc.h"
+#include <stdbool.h>
 
-//#define NUCLEO
+typedef bool bool_t;
 
-
-
-
-
+/** =====[Implementación de funciones públicas ]==========================*/
+/**
+ * @brief Inicia la máquina de estado
+ */
 void fsmInit( void );
+
+/**
+ * Actualiza la máquina de estados
+ */
 void fsmUpdate( void );

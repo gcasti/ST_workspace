@@ -1,20 +1,26 @@
-/*
- * stm32f767_indicador_v1.h
- *
- *  Created on: 1 dic. 2021
- *      Author: gcasti
+/**
+ *  Board Support Package
+ *  BSP para placa Indicador V1
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
 
 #ifndef BSP_STM32F767_INDICADOR_V1_STM32F767_INDICADOR_V1_H_
 #define BSP_STM32F767_INDICADOR_V1_STM32F767_INDICADOR_V1_H_
 
-/* Includes ------------------------------------------------------------------*/
+/** =====[Inclusión de dependencias públicas ]==========================*/
 #include "stm32f7xx_hal.h"
+#include <stdbool.h>
 
-
+/**
+ * Definición de macros para asignación de pines para manejo del Buzzer
+ */
 #define BUZZER_PORT GPIOA
 #define BUZZER_PIN GPIO_PIN_15
 
+/**
+ * Definición de macros para asignación de pines para manejo del ADC
+ */
 #define AD_TEMP_PIN GPIO_PIN_15
 #define AD_TEMP_GPIO_PORT GPIOB
 #define AD_A0_PIN GPIO_PIN_12
@@ -34,16 +40,25 @@
 
 // Variables públicas
 SPI_HandleTypeDef hspi2;
-UART_HandleTypeDef huart;
+UART_HandleTypeDef UartHandle;
 
+typedef bool bool_t;
 
+/**
+ * @brief Inicio módulo UART parámetros predefinidos en el código
+ * @return 	true: inicio correcto
+ * 			false: error de inicialización
+ */
+bool_t BSP_UART_Init(void);
 
-// Funciones
-void BSP_UART_Init(void);
-
-// Configura el ADC
+/**
+ * @brief Inicia todos los periféricos para operación del ADC
+ */
 void BSP_Adc_Init(void);
 
+/**
+ * @brief Inicia los periféricos para manejo del buzzer
+ */
 void BSP_Buzzer_Init(void);
 
 #endif /* BSP_STM32F767_INDICADOR_V1_STM32F767_INDICADOR_V1_H_ */

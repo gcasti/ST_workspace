@@ -1,13 +1,12 @@
-/*
- * stm32f767_indicador_v1.c
- *
- *  Created on: 1 dic. 2021
- *      Author: gcasti
+/**
+ *  Board Support Package
+ *  BSP para placa Indicador V1
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
 
 #include "stm32f767_indicador_v1.h"
 #include <stdbool.h>
-
 
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim4;
@@ -16,10 +15,8 @@ volatile uint8_t dato_temp[3];
 static void BSP_SPI_Init(void);
 static void BSP_TIM4_Init(void);
 
-
-void BSP_Buzzer_Init()
-{
-	 GPIO_InitTypeDef GPIO_InitStruct = {0};
+void BSP_Buzzer_Init() {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -34,9 +31,8 @@ void BSP_Buzzer_Init()
 	BSP_TIM4_Init();
 }
 
-void BSP_Adc_Init(void)
-{
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
+void BSP_Adc_Init(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
 	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
@@ -50,10 +46,10 @@ void BSP_Adc_Init(void)
 	HAL_GPIO_WritePin(AD_TEMP_GPIO_PORT, AD_TEMP_PIN, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(AD_A0_GPIO_PORT, AD_A0_PIN, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(AD_PDWN_GPIO_PORT, AD_PDWN_PIN, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(AD_SPEED_GPIO_PORT,AD_SPEED_PIN, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(AD_GAIN0_GPIO_PORT,AD_GAIN0_PIN, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(AD_GAIN1_GPIO_PORT,AD_GAIN1_PIN, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(AD_EXTCLK_GPIO_PORT,AD_EXTCLK_PIN, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(AD_SPEED_GPIO_PORT, AD_SPEED_PIN, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(AD_GAIN0_GPIO_PORT, AD_GAIN0_PIN, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(AD_GAIN1_GPIO_PORT, AD_GAIN1_PIN, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(AD_EXTCLK_GPIO_PORT, AD_EXTCLK_PIN, GPIO_PIN_RESET);
 
 	/*Configure GPIO pin : AD_TEMP_Pin */
 	GPIO_InitStruct.Pin = AD_TEMP_PIN;
@@ -116,74 +112,69 @@ void BSP_Adc_Init(void)
 
 	BSP_SPI_Init();
 
+}
+
+static void BSP_SPI_Init(void) {
+	/* SPI parameter configuration*/
+	hspi2.Instance = SPI2;
+	hspi2.Init.Mode = SPI_MODE_MASTER;
+	hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+	hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+	hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+	hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+	hspi2.Init.NSS = SPI_NSS_SOFT;
+	hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+	hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+	hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	hspi2.Init.CRCPolynomial = 7;
+	hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+	hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+	if (HAL_SPI_Init(&hspi2) != HAL_OK) {
+		// Error_Handler();
 	}
 
-static void BSP_SPI_Init(void)
-{
-  /* SPI parameter configuration*/
-  hspi2.Instance = SPI2;
-  hspi2.Init.Mode = SPI_MODE_MASTER;
-  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
-  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi2.Init.CRCPolynomial = 7;
-  hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
-  if (HAL_SPI_Init(&hspi2) != HAL_OK)
-  {
-   // Error_Handler();
-  }
-
 }
 
-void BSP_UART_Init(void)
-{
-  huart.Instance = USART3;
-  huart.Init.BaudRate = 9600;
-  huart.Init.WordLength = UART_WORDLENGTH_8B;
-  huart.Init.StopBits = UART_STOPBITS_1;
-  huart.Init.Parity = UART_PARITY_NONE;
-  huart.Init.Mode = UART_MODE_TX_RX;
-  huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart) != HAL_OK)
-  {
-  //  Error_Handler();
-  }
+bool_t BSP_UART_Init(void) {
+	bool_t retVal = HAL_OK;
 
+	UartHandle.Instance = USART3;
+	UartHandle.Init.BaudRate = 115200;
+	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+	UartHandle.Init.StopBits = UART_STOPBITS_1;
+	UartHandle.Init.Parity = UART_PARITY_NONE;
+	UartHandle.Init.Mode = UART_MODE_TX_RX;
+	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+	UartHandle.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	UartHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if (HAL_UART_Init(&UartHandle) != HAL_OK) {
+		retVal = false;
+	}
+	return retVal;
 }
 
-static void BSP_TIM4_Init(void)
-{
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
+static void BSP_TIM4_Init(void) {
+	TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
-  htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 51000;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 20;
-  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
-  {
-     }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
-  {
-   // Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
-  {
-    //Error_Handler();
-  }
+	htim4.Instance = TIM4;
+	htim4.Init.Prescaler = 51000;
+	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim4.Init.Period = 20;
+	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim4) != HAL_OK) {
+	}
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK) {
+		// Error_Handler();
+	}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig)
+			!= HAL_OK) {
+		//Error_Handler();
+	}
 }

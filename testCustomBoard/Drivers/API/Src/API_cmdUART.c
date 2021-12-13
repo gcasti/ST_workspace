@@ -1,77 +1,108 @@
-/*=====[Module Name]===========================================================
- * Copyright 2019 Esteban Daniel VOLENTINI <evolentini@gmail.com>
- * All rights reserved.
- * License: BSD-3-Clause <https://opensource.org/licenses/BSD-3-Clause>)
- *
- * Version: 0.1.0
- * Creation Date: 2019/03/01
+/**
+ *  @brief Módulo para recepción de comandos por la UART
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
-
-/*=====[Inclusion of own header]=============================================*/
+/** =====[Inclusión de dependencia privadas ]==========================*/
 
 #include "API_cmdUART.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f767_indicador_v1.h"
 #include <stdio.h>
+#include <string.h>
 
-/*=====[Inclusions of private function dependencies]=========================*/
-
-/*=====[Definition macros of private constants]==============================*/
-
-/*=====[Private function-like macros]========================================*/
-
-/*=====[Definitions of private data types]===================================*/
-
-/*=====[Definitions of external public global variables]=====================*/
-
-/*=====[Definitions of public global variables]==============================*/
-
-/*=====[Definitions of private global variables]=============================*/
-
-/*=====[Prototypes (declarations) of private functions]======================*/
-
-/*=====[Implementations of public functions]=================================*/
-
-/*=====[Implementations of interrupt functions]==============================*/
+/** =====[Definición de funciones privadas ]==========================*/
+static void sendParameters(void);
 
 #ifdef __GNUC__
 /* With GCC, small printf (option LD Linker->Libraries->Small printf
-   set to 'Yes') calls __io_putchar() */
+ set to 'Yes') calls __io_putchar() */
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 #else
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 
 
-void cmdUart_Init(void){
+/** =====[Definición de funciones públicas ]==========================*/
+void cmdUart_Init(void) {
 	BSP_UART_Init();
+	sendParameters();
 }
-/**
- * Chequea si se recibe un byte desde la UART y que sea un comando válido de la lista
- */
-bool cmdUart_Receive(uint8_t* cmd){
-	bool retVal = false;
-	uint8_t cmd_temp=0;
 
-	if(HAL_UART_Receive(&huart, &cmd_temp , 1, 10) == HAL_OK){
-		if(cmdLAST > cmd_temp){
-			*cmd=cmd_temp;
+bool_t cmdUart_Receive(uint8_t *cmd) {
+	bool_t retVal = false;
+	uint8_t cmd_temp = 0;
+
+	if (HAL_UART_Receive(&UartHandle, &cmd_temp, 1, 10) == HAL_OK) {
+		if (cmdLAST > cmd_temp) {
+			*cmd = cmd_temp;
 			retVal = true;
-		}else
-			printf("Dato no valido \n\r");
-		}
+		} else
+			uartSendString("\n\r Dato no valido \n\r");
+	}
 	return retVal;
 }
 
-
-
-PUTCHAR_PROTOTYPE
-{
-  /* Place your implementation of fputc here */
-  /* e.g. write a character to the USART3 and Loop until the end of transmission */
-  HAL_UART_Transmit(&huart, (uint8_t *)&ch, 1, 0xFFFF);
-
-  return ch;
+void uartSendString(char *pstring) {
+	HAL_UART_Transmit(&UartHandle, (uint8_t*) pstring,
+			strlen(pstring) / sizeof(char), 1000);
 }
 
+/** =====[Implementación de funciones privadas]==========================*/
+
+static void sendParameters() {
+	uartSendString("\n\r **************************** \r");
+	uartSendString("\n\r * Modulo UART inicializado   \r");
+	uartSendString("\n\r * Baud Rate: ");
+	uartSendString("115200");
+	if (UART_STOPBITS_1 == UartHandle.Init.StopBits) {
+		uartSendString("\n\r * Stop bit: 1");
+	} else {
+		uartSendString("\n\r * Stop bit: 2");
+	}
+	uartSendString("\n\r * Flow control:");
+	switch (UartHandle.Init.HwFlowCtl) {
+	case UART_HWCONTROL_NONE:
+		uartSendString("NONE ");
+		break;
+	case UART_HWCONTROL_RTS:
+		uartSendString("RTS ");
+		break;
+	case UART_HWCONTROL_CTS:
+		uartSendString("CTS ");
+		break;
+	case UART_HWCONTROL_RTS_CTS:
+		uartSendString("RTS/CTS ");
+		break;
+	default:
+		break;
+	}
+
+	uartSendString("\n\r * Parity:");
+	switch (UartHandle.Init.Parity) {
+	case UART_PARITY_NONE:
+		uartSendString("NONE ");
+		break;
+	case UART_PARITY_EVEN:
+		uartSendString("EVEN ");
+		break;
+	case UART_PARITY_ODD:
+		uartSendString("ODD ");
+		break;
+	default:
+		break;
+	}
+	uartSendString("\n\r **************************** \n\r");
+
+}
+
+
+
+PUTCHAR_PROTOTYPE {
+	/* Place your implementation of fputc here */
+	/* e.g. write a character to the USART3 and Loop until the end of transmission */
+	HAL_UART_Transmit(&UartHandle, (uint8_t*) &ch, 1, 0xFFFF);
+
+	return ch;
+}
 

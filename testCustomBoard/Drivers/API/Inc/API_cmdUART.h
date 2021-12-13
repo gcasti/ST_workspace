@@ -1,59 +1,60 @@
-/*=====[Module Name]===========================================================
- * Copyright 2019 Esteban Daniel VOLENTINI <evolentini@gmail.com>
- * All rights reserved.
- * License: BSD-3-Clause <https://opensource.org/licenses/BSD-3-Clause>)
- *
- * Version: 0.1.0
- * Creation Date: 2019/03/01
+/**
+ *  @brief Módulo para recepción de comandos por la UART
+ *  @author Ing. Guillermo L. Castiglioni
+ *  @date 12/2021
  */
-
-/*=====[Avoid multiple inclusion - begin]====================================*/
 
 #ifndef API_INC_API_CMDUART_H_
 #define API_INC_API_CMDUART_H_
 
-/*=====[Inclusions of public function dependencies]==========================*/
-
-#include <stdint.h>
+/** =====[Inclusión de dependencia públicas ]==========================*/
 #include <stdbool.h>
+#include <stdint.h>
 
-/*=====[Definition macros of public constants]===============================*/
 
-/*=====[Public function-like macros]=========================================*/
-
-/*=====[Definitions of public data types]====================================*/
-
+/**
+ * @brief	Definición de comandos para operación y configuración del ADC
+ */
 typedef enum{
-	configAQ 		= 0x00,
-	exitCONFIG 		= 0x01,
-	startAQ			= 0x02,
-	stopAQ			= 0x03,
-	cmdGAIN1		= 0x04,
-	cmdGAIN2		= 0x05,
-	cmdGAIN64		= 0x06,
-	cmdGAIN128		= 0x07,
-	cmdCHANNEL_IN1	= 0x08,
-	cmdCHANNEL_IN2	= 0x09,
-	cmdCHANNEL_TEMP = 0x10,
-	cmdLOW_SPEED	= 0x11,
-	cmdHIGH_SPEED	= 0x12,
-	cmdPWR_ENABLE	= 0x13,
-	cmdPWR_DISABLE	= 0x14,
-	cmdLAST
+	configAQ 		= 0x00,     /**< configAQ */
+	exitCONFIG 		= 0x01,   	/**< exitCONFIG */
+	startAQ			= 0x02,     /**< startAQ */
+	stopAQ			= 0x03,     /**< stopAQ */
+	cmdGAIN1		= 0x04,     /**< cmdGAIN1 */
+	cmdGAIN2		= 0x05,     /**< cmdGAIN2 */
+	cmdGAIN64		= 0x06,     /**< cmdGAIN64 */
+	cmdGAIN128		= 0x07,    	/**< cmdGAIN128 */
+	cmdCHANNEL_IN1	= 0x08, 	/**< cmdCHANNEL_IN1 */
+	cmdCHANNEL_IN2	= 0x09, 	/**< cmdCHANNEL_IN2 */
+	cmdCHANNEL_TEMP = 0x10,		/**< cmdCHANNEL_TEMP */
+	cmdLOW_SPEED	= 0x11,   	/**< cmdLOW_SPEED */
+	cmdHIGH_SPEED	= 0x12,  	/**< cmdHIGH_SPEED */
+	cmdPWR_ENABLE	= 0x13,  	/**< cmdPWR_ENABLE */
+	cmdPWR_DISABLE	= 0x14, 	/**< cmdPWR_DISABLE */
+	cmdLAST                		/**< cmdLAST */
 } cmd_t;
 
-/*=====[Definitions of public global variables]==============================*/
+typedef bool bool_t;
 
-/*=====[Prototypes (declarations) of public functions]=======================*/
 
-// Inicializa la uart
+/**
+ * @brief Inicializa el módulo UART para recepción de comandos y envío de datos
+ */
 void cmdUart_Init(void);
 
-// Recibe un comando desde la uart
-bool cmdUart_Receive(uint8_t * cmd);
+/**
+ * @brief Lee un dato recibido y verifica si es un comando válido
+ * @param cmd		// Byte que se lee desde la UART
+ * @return			// True: Comando válido
+ * 					// False: Comando inválido
+ */
+bool_t cmdUart_Receive(uint8_t * cmd);
 
-void sendData(void);
-
+/**
+ * @brief Envía una cadena de carácteres mediante el módulo UART
+ * @param pstring 	// Puntero a la cadena de cáracteres
+ */
+void uartSendString(char * pstring);
 
 
 #endif /* API_INC_API_CMDUART_H_ */
